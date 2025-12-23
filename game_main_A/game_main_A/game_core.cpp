@@ -8,16 +8,32 @@
 #include <cstdlib>  // 包含 rand() 和 srand()
 #include <ctime>    // 包含 time()
 #include "game_core.h"
-//#include "game_defense.h"
+#include "game_defense.h"
 using namespace std;
 
-//敌方基地坐标数组,使用需声明extern外部变量
-Enemy_BasePos Enemy_BasePosMap1[16] = {20,20,60,20,780,20,820,20,20,60,60,60,780,60,820,60,20,540,60,540,780,540,820,540,20,580,60,580,780,580,820,580 };
-Enemy_BasePos Enemy_BasePosMap2[5] = {180,20,300,20,420,20,540,20,660,20};
-Enemy_BasePos Enemy_BasePosMap3[20] = {140,20,700,20,60,60,100,60,740,60,780,60,60,100,780,100,20,140,820,140,20,460,820,460,60,500,780,500,60,540,100,540,740,540,780,540,140,580,700,580 };
+//敌方基地坐标数组,使用需声明extern外部变量（坐标为给每个方格的中心点）
+Enemy_BasePos Enemy_BasePosMap1[16] = { 
+	{20,20},{60,20},{780,20},{820,20},
+	{20,60},{60,60},{780,60},{820,60},
+	{20,540},{60,540},{780,540},{820,540},
+	{20,580},{60,580},{780,580},{820,580}//全是从上至下，从左至右排列
+};
+Enemy_BasePos Enemy_BasePosMap2[5] = { {180,20},{300,20},{420,20},{540,20},{660,20} };
+Enemy_BasePos Enemy_BasePosMap3[20] = { 
+	{140,20},{700,20},
+	{60,60},{100,60},
+	{740,60},{780,60},
+	{60,100},{780,100},
+	{20,140},{820,140},
+	{20,460},{820,460},
+	{60,500},{780,500},
+	{60,540},{100,540},
+	{740,540},{780,540},
+	{140,580},{700,580}//从左至右，从上至下
+};
 
-//我方基地坐标
-Defense_AreaPos Friendly_BasePosMap1[] = { 
+//我方基地坐标(所有坐标为实际坐标除以gap(40)而得，将方格看作一个点，从0开始)
+Defense_AreaPos Friendly_BasePosMap1[] = { //从上至下，从左至右
 	{5,3},{5,4} ,{5,5},{5,6},{5,7},{5,8},{5,9},{5,10},{5,11},
 	{6,3},{6,4} ,{6,5},{6,6},{6,7},{6,8},{6,9},{6,10},{6,11},
 	{7,3},{7,4} ,{7,5},{7,6},{7,7},{7,8},{7,9},{7,10},{7,11},
@@ -280,9 +296,8 @@ void Game_Map(int random_num)
 		{
 			fillrectangle(10 * Gap, j, 11 * Gap, j + Gap);//上中侧
 			fillrectangle(10 * Gap, Game_height - j - Gap, 11 * Gap, Game_height - j);//下中侧
-		}
+		}int Move_Gap = 0;
 		for (int j = 4 * Gap; j < 6 * Gap; j += Gap) {
-			static int Move_Gap = 0;
 			for (int i = 4 * Gap + Move_Gap; i < 7 * Gap + Move_Gap; i += Gap) {
 				fillrectangle(i, j, i + Gap, j + Gap);//中左侧
 				fillrectangle(Game_width - i, j, Game_width - i - Gap, j + Gap);//中右侧	
