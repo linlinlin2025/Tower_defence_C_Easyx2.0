@@ -27,6 +27,11 @@ struct Enemy_BasePos {//敌方基地单个坐标结构体
 	int y;
 };
 
+struct Defense_AreaPos {//防御单位可部署区域坐标结构体
+	int x;
+	int y;
+};
+
 /**
  * @biref :用于游戏界面初始化
  * @details :初始化EasyX窗口、加载资源、初始化游戏数据（得分、难度、最高记录）、生成初始预览防御单位
