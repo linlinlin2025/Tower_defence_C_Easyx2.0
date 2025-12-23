@@ -72,7 +72,7 @@ GridRange calcTowerGridRange(int grid_x, int grid_y);// 计算单个方格的射程范围（
 void PrintDefenseAreas();//打印地图下方的防御区域
 DefenseType CheckClickedTower(int mouse_x, int mouse_y);//检测鼠标点击了哪种防御塔
 DefenseUnit GetDefense(int* totalmoney);//给出点击的防御塔类型和拥有的总金币，返回需要的防御塔或者无效防御塔
-void generate_blocks(int random_num);// 根据地图编号生成棕色方块坐标
+void generate_blocks(int random_num);// 根据地图编号得到棕色方块坐标
 void draw_blocks();//检测鼠标悬停并绘制方块
 bool canDeployCannon(int mouse_x, int mouse_y);// 判断鼠标点击位置是否可部署大炮（返回true=可部署，false=不可部署）
 void drawCannons(Cannon cannon);// 绘制大炮
@@ -80,8 +80,7 @@ void deployCannon(int mouse_x, int mouse_y, int* totalmoney);// 部署大炮：先判断
 void selectCannon(int mouse_x, int mouse_y);// 选中大炮
 void upgradeCannon(int* totalmoney);// 升级大炮（仅提升攻击力，等级越高增量越小）
 void removeCannon(int* totalmoney);// 移除大炮（返还50%购买价）
-void drawButtons(int* totalmoney);// 绘制功能按钮
-void handleMouse(int* totalmoney);// 处理鼠标点击（部署、选中、升级、移除）
+void RealTimeMouseMonitor(int* totalmoney);//实时监测鼠标位置及点击事件
 //sinan的函数（思南给我所有敌人的坐标，我去判断哪些在射程内，并返回在射程内的敌人结构体给思南）
 //画子弹线条的函数（根据在射程内的敌人坐标和大炮坐标画线条）
 
