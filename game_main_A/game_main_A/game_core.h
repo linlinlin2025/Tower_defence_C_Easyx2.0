@@ -19,6 +19,12 @@ using namespace std;
 #define Game_width 840//游戏窗口宽度
 #define Game_height 600//游戏窗口高度
 #define Gap 40//方格间距
+#define SIDEBAR_X        840    // 侧边栏左侧X坐标
+#define SIDEBAR_Y        0      // 侧边栏顶部Y坐标
+#define SIDEBAR_WIDTH    184    // 侧边栏宽度（横向占用200像素）
+#define SIDEBAR_HEIGHT   768    // 侧边栏高度（纵向占用800像素，和窗口高度一致）
+#define SIDEBAR_BG_COLOR (RGB(237, 231, 216))  // 侧边栏背景色
+
 
 extern int random_num;//随机地图选择变量
 
@@ -91,4 +97,5 @@ void DrawGameOver(void);
 // restart_flag：int类型标志（0=不重开，1=玩家请求重开）
 // quit_flag：int类型标志（0=不退出，1=玩家请求退出游戏返回主界面）
 
+void UpdateSidebarData(int dataY, int newData);
 #endif

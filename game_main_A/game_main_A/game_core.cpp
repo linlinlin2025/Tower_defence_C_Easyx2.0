@@ -124,6 +124,8 @@ void Game_Loop(int& game_over_flag, int& restart_flag, int& quit_flag)
     ExMessage game_msg;
     while (peekmessage(&game_msg, EX_MOUSE | EX_KEY)) {
 	
+		if(game_msg.message == WM_LBUTTONDOWN)
+			cout << game_msg.x << " " << game_msg.y << endl;
         if (game_msg.message == WM_KEYDOWN) {
             switch (game_msg.vkcode) {
                 case VK_ESCAPE: // ESC退出
@@ -143,7 +145,7 @@ void Game_Loop(int& game_over_flag, int& restart_flag, int& quit_flag)
 			if (game_msg.x >= 860 && game_msg.x <= 940 && game_msg.y >= 140 && game_msg.y <= 190) {
 				quit_flag = 1;
 				game_over_flag = 1;
-			}
+			} 
 			// 再判断重开按钮（700,120 ~ 780,170）
 			else if (game_msg.x >= 860 && game_msg.x <= 940 && game_msg.y >= 200 && game_msg.y <= 250) {
 				restart_flag = 1;
@@ -151,7 +153,8 @@ void Game_Loop(int& game_over_flag, int& restart_flag, int& quit_flag)
 			}
 		}
     }
-
+	
+	UpdateSidebarData(20,100);
     // 游戏逻辑（可扩展）
 	// ********** 你的游戏主逻辑写在这里 **********
     // 比如：玩家操作、碰撞检测、敌人AI等
@@ -321,11 +324,11 @@ void Game_Map(int random_num)
 
 void Game_SidebarData()
 {
-	TCHAR Game_ScoreStr[7] = _T("积分："), Game_CoinStr[7] = _T("金币："), CurrentHPStr[9] = _T("生命值："), Current_LevelStr[7] = _T("等级：");
+	TCHAR Game_ScoreStr[7] = _T("积分：0"), Game_CoinStr[7] = _T("金币："), CurrentHPStr[9] = _T("生命值："), Current_LevelStr[7] = _T("等级：1");
 	settextcolor(BLACK);
 	LOGFONT f;
 	gettextstyle(&f);						// 获取当前字体设置
-	f.lfHeight = 23;						// 设置字体高度为 20
+	f.lfHeight = 23;						// 设置字体高度为 23
 	f.lfWeight = FW_BOLD;					// 设置字体为粗体
 	_tcscpy_s(f.lfFaceName, _T("微软雅黑"));		// 设置字体为“黑体”
 	f.lfQuality = ANTIALIASED_QUALITY;		// 设置输出效果为抗锯齿  
@@ -334,6 +337,7 @@ void Game_SidebarData()
 	outtextxy(860, 50, Game_CoinStr);
 	outtextxy(860, 80, CurrentHPStr);
 	outtextxy(860, 110, Current_LevelStr);
+	
 
 	//数据显示部分后续补充
 
@@ -368,4 +372,36 @@ void DrawGameOver() {
 	// 示例：绘制“退出游戏”按钮
 	fillroundrect(280, 420, 560, 520, 20, 20);
 	outtextxy(350, 440, _T("退出游戏"));
+}
+
+void UpdateSidebarData(int dataY, int newData)
+{
+	int localX = SIDEBAR_X + 20 + 40;
+	int localY = SIDEBAR_Y + dataY;
+	int localWidth = 114;
+	int localHeight = 23;
+
+	// 1. 创建内存设备上下文
+	IMAGE img(localWidth, localHeight);
+	SetWorkingImage(&img);
+
+	// 2. 在内存中绘制
+	setfillcolor(SIDEBAR_BG_COLOR);
+	solidrectangle(0, 0, localWidth, localHeight);
+
+	settextcolor(BLACK);
+	settextstyle(23, 0, _T("微软雅黑"));
+
+	TCHAR DataStr[20] = { 0 };
+	_stprintf_s(DataStr, _T("%d"), newData);
+
+	// 设置文本背景透明
+	setbkmode(TRANSPARENT);
+	outtextxy(0, 0, DataStr);
+
+	// 3. 恢复到屏幕设备上下文
+	SetWorkingImage(NULL);
+
+	// 4. 绘制到屏幕
+	putimage(localX, localY, &img);
 }
