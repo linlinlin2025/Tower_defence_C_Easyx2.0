@@ -18,12 +18,13 @@ int random_num;
 ExMessage msg;
 int is_Start = 0; // 是否点击开始游戏按钮的标志
 
-
+//
 // 定义游戏状态枚举
 enum GameState {
     STATE_MAIN_MENU,   // 主界面（未点击开始游戏）
     STATE_GAME_PLAYING,// 游戏运行中
     STATE_GAME_OVER    // 游戏结束（显示再来一局）
+
 };
 GameState game_state = STATE_MAIN_MENU; // 初始状态为主界面
 
