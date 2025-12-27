@@ -2,167 +2,167 @@
 #include "game_rule.h"
 #include"game_core.h"
 #include"game_enemy .h"
-#include<easyx.h>  // ±ØĞë°üº¬EasyXÍ·ÎÄ¼ş
-#include<conio.h>  // °üº¬_getch()µÄÍ·ÎÄ¼ş
+#include<easyx.h>  // å¿…é¡»åŒ…å«EasyXå¤´æ–‡ä»¶
+#include<conio.h>  // åŒ…å«_getch()çš„å¤´æ–‡ä»¶
 using namespace std;
 
 
-//int Game_Coin = 100;     // ½ğ±Ò£¬³õÊ¼Îª100
-//int CurrentHP = 100;     // ÑªÁ¿£¬³õÊ¼Îª100
+//int Game_Coin = 100;     // é‡‘å¸ï¼Œåˆå§‹ä¸º100
+//int CurrentHP = 100;     // è¡€é‡ï¼Œåˆå§‹ä¸º100
 
-//#define width 1024 //´°¿Ú¿í¶È
-//#define height 768//´°¿Ú¸ß¶È
+//#define width 1024 //çª—å£å®½åº¦
+//#define height 768//çª—å£é«˜åº¦
 
-//Í¼Ò»£¬ÓÎÏ·Ö÷½çÃæ
-void Interface1(int x, int y, int w, int h, const TCHAR* text)  // ¸ÄÎªconst TCHAR*
+//å›¾ä¸€ï¼Œæ¸¸æˆä¸»ç•Œé¢
+void Interface1(int x, int y, int w, int h, const TCHAR* text)  // æ”¹ä¸ºconst TCHAR*
 {
-	// »æÖÆÔ²½Ç°´Å¥µ×É«
+	// ç»˜åˆ¶åœ†è§’æŒ‰é’®åº•è‰²
 	setfillcolor(0xFFFACD);
 	fillroundrect(x, y, x + w, y + h, 5, 5);
 
-	// »æÖÆ°´Å¥ÎÄ×Ö²¢¾ÓÖĞ£¨ËùÓĞ×Ö·û´®ÓÃ_T()°ü¹ü£©
+	// ç»˜åˆ¶æŒ‰é’®æ–‡å­—å¹¶å±…ä¸­ï¼ˆæ‰€æœ‰å­—ç¬¦ä¸²ç”¨_T()åŒ…è£¹ï¼‰
 	settextcolor(BLACK);
-	settextstyle(40, 0, _T("Î¢ÈíÑÅºÚ"));  // ×ÖÌåÃû¼Ó_T()
-	int hSpace = (w - textwidth(text)) / 2;  // textwidthÖ§³ÖTCHAR
-	int vSpace = (h - textheight(text)) / 2; // textheightÖ§³ÖTCHAR
+	settextstyle(40, 0, _T("å¾®è½¯é›…é»‘"));  // å­—ä½“ååŠ _T()
+	int hSpace = (w - textwidth(text)) / 2;  // textwidthæ”¯æŒTCHAR
+	int vSpace = (h - textheight(text)) / 2; // textheightæ”¯æŒTCHAR
 	outtextxy(x + hSpace, y + vSpace, text);
 }
-// »æÖÆÎÄ×Ö£¨ÊÊÅä¿í×Ö·û£©
+// ç»˜åˆ¶æ–‡å­—ï¼ˆé€‚é…å®½å­—ç¬¦ï¼‰
 void DrawText1()
 {
 	setbkmode(TRANSPARENT);
-	settextstyle(40, 0, _T("Î¢ÈíÑÅºÚ"));
+	settextstyle(40, 0, _T("å¾®è½¯é›…é»‘"));
 	settextcolor(BLACK);
 	
-	Interface1(width /3, height/3, 280, 100, _T("¿ªÊ¼ÓÎÏ·"));  // ×Ö·û´®¼Ó_T()
-	Interface1(width /3, height*19/30, 280, 100, _T("ÓÎÏ·¹æÔò"));
+	Interface1(width /3, height/3, 280, 100, _T("å¼€å§‹æ¸¸æˆ"));  // å­—ç¬¦ä¸²åŠ _T()
+	Interface1(width /3, height*19/30, 280, 100, _T("æ¸¸æˆè§„åˆ™"));
 
-    outtextxy(width/3, 120, _T("ÀúÊ·¼ÇÂ¼:"));
+    outtextxy(width/3, 120, _T("å†å²è®°å½•:"));
 }
 
-//µÚ¶ş¸öÍ¼,ÓÎÏ·¹æÔò½çÃæ
+//ç¬¬äºŒä¸ªå›¾,æ¸¸æˆè§„åˆ™ç•Œé¢
 
 
-void Interface2(int x, int y, int w, int h, const TCHAR* text)  // ¸ÄÎªconst TCHAR*
+void Interface2(int x, int y, int w, int h, const TCHAR* text)  // æ”¹ä¸ºconst TCHAR*
 {
-	// »æÖÆÔ²½Ç°´Å¥µ×É«
+	// ç»˜åˆ¶åœ†è§’æŒ‰é’®åº•è‰²
 
-	setfillstyle(BS_SOLID); // ĞÂÔö£ºÊµĞÄÌî³ä
+	setfillstyle(BS_SOLID); // æ–°å¢ï¼šå®å¿ƒå¡«å……
 	setfillcolor(0xFFFACD);
 	fillroundrect(x, y, x + w, y + h, 5, 5);
-	// »æÖÆ°´Å¥ÎÄ×Ö²¢¾ÓÖĞ£¨ËùÓĞ×Ö·û´®ÓÃ_T()°ü¹ü£©
+	// ç»˜åˆ¶æŒ‰é’®æ–‡å­—å¹¶å±…ä¸­ï¼ˆæ‰€æœ‰å­—ç¬¦ä¸²ç”¨_T()åŒ…è£¹ï¼‰
 	settextcolor(BLACK);
-	settextstyle(40, 0, _T("Î¢ÈíÑÅºÚ"));  // ×ÖÌåÃû¼Ó_T()
-	int hSpace = (w - textwidth(text)) / 2;  // textwidthÖ§³ÖTCHAR
-	int vSpace = (h - textheight(text)) / 2; // textheightÖ§³ÖTCHAR
+	settextstyle(40, 0, _T("å¾®è½¯é›…é»‘"));  // å­—ä½“ååŠ _T()
+	int hSpace = (w - textwidth(text)) / 2;  // textwidthæ”¯æŒTCHAR
+	int vSpace = (h - textheight(text)) / 2; // textheightæ”¯æŒTCHAR
 	outtextxy(x + hSpace, y + vSpace, text);
 
 }	
-// »æÖÆÎÄ×Ö£¨ÊÊÅä¿í×Ö·û£©
+// ç»˜åˆ¶æ–‡å­—ï¼ˆé€‚é…å®½å­—ç¬¦ï¼‰
 void DrawGameRules(int x, int y, int lineHeight)
 {
-	// ÉèÖÃÎÄ±¾ÑùÊ½£¨ÓÎÏ·¹æÔò×¨ÓÃ£©
+	// è®¾ç½®æ–‡æœ¬æ ·å¼ï¼ˆæ¸¸æˆè§„åˆ™ä¸“ç”¨ï¼‰
 	setbkmode(TRANSPARENT);
-	settextstyle(21, 0, _T("Î¢ÈíÑÅºÚ")); // ×ÖÌå´óĞ¡ÊÊÖĞ£¬±ãÓÚÔÄ¶Á
+	settextstyle(30, 0, _T("å¾®è½¯é›…é»‘")); // å­—ä½“å¤§å°é€‚ä¸­ï¼Œä¾¿äºé˜…è¯»
 	settextcolor(BLACK);
 
-	// °´ĞĞ²ğ·ÖÓÎÏ·¹æÔò£¨Ã¿ĞĞ³¤¶ÈÊÊÅä½çÃæ£¬±ÜÃâ³¬³öÏÔÊ¾·¶Î§£©
+	// æŒ‰è¡Œæ‹†åˆ†æ¸¸æˆè§„åˆ™ï¼ˆæ¯è¡Œé•¿åº¦é€‚é…ç•Œé¢ï¼Œé¿å…è¶…å‡ºæ˜¾ç¤ºèŒƒå›´ï¼‰
 	const TCHAR* rules[] = {
-		_T("Íæ·¨ËµÃ÷: Ò»ÕÅ¿Õ°×µÄµØÍ¼£¬ÈÃ¹ÖÊŞ°´ÕÕÄã°ÚµÄÅÚËşµÄÕóĞÍÀ´»ØÒÆ¶¯£¬²¢ÇÒ¿ÉÒÔÍ¨¹ı´î½¨ºÍ¼úÂô³ö¿ÚµÄÅÚËş£¬"),
-		_T("Ê¹¹ÖÊŞÀ´»ØÒÆ¶¯£¬´ïµ½×î³¤µÄÒÆ¶¯¾àÀë£¬ÒÔ±ãÓÚÅÚËş²»¶ÏµÄºä»÷¹ÖÊŞ¡£"),
-		_T(""), // ¿ÕĞĞ·Ö¸ô
-		_T("¸ß½×Íæ·¨ÌáÊ¾£ºÑ¡ÔñÎäÆ÷²¢²¿Êğµ½µØÍ¼ºó£¬¹ÖÎï½«³¯×Å»ùµØ½ø¹¥¡£Ìá¹©´óÅÚ¹¥»÷¹ÖÎï£¬ÁíÉèÓĞ¿É³äµ±"),
-		_T("·ÀÓùËşµÄÂ·ÕÏ¡£Ê×ÒªÈÎÎñÊÇ²ßÂÔĞÔ²¼ÖÃ´óÅÚ£¬Í¨¹ı´óÅÚºÍÂ·ÕÏÇ½ÅäºÏÒÔÏŞÖÆ¹ÖÎïĞĞ½øÂ·Ïß¡£"),
-		_T("¿ÉËæÊ±Éı¼¶ÏÖÓĞÎäÆ÷£¬ËùÓĞÎäÆ÷»á×Ô¶¯¹¥»÷Éä³ÌÄÚµÄ¹ÖÎï¡£½ğ±ÒÓÃÓÚ¹ºÂòºÍÉı¼¶ÎäÆ÷£¬ÏûÃğ¹ÖÎï¿ÉÔö¼Ó½ğ±Ò¡£"),
-		_T("ÉúÃüÖµ»áÒò¹ÖÎïµÖ´ïÖÕµã¶ø¼õÉÙ£¬²ğ³ıÈÎºÎ´óÅÚ¿É·µ»¹50%½ğ±Ò¡£"),
-		_T(""), // ¿ÕĞĞ·Ö¸ô
-		_T("ÎÂÜ°ÌáÊ¾£ºµÖÖÆ²»Á¼ÓÎÏ·£¬¾Ü¾øµÁ°æÓÎÏ·£¬×¢Òâ×ÔÎÒ±£»¤£¬½÷·ÀÊÜÆ­ÉÏµ±£¬ÊÊ¶ÈÓÎÏ·ÒæÄÔ£¬³ÁÃÔÓÎÏ·ÉËÉí£¬"),
-		_T("ºÏÀí°²ÅÅÊ±¼ä£¬ÏíÊÜ½¡¿µÉú»î¡£×î¼ÑÊÓÆµÓÎÏ·»ú")
+ _T("ç©æ³•è¯´æ˜ï¼šåœ¨ç©ºç™½åœ°å›¾ä¸Šï¼Œé€šè¿‡å¸ƒç½®ç‚®å¡”æ„å»ºè¡Œè¿›è·¯çº¿ï¼Œå¼•å¯¼æ€ªå…½æŒ‰é˜µå‹å¾€å¤ç§»åŠ¨ï¼›å¯é€šè¿‡æ­å»ºæˆ–å‡ºå”®å‡ºå£å¤„çš„ç‚®å¡”ï¼Œ"),
+ _T("è°ƒæ•´æ€ªå…½çš„ç§»åŠ¨è·¯å¾„ï¼Œå°½å¯èƒ½å»¶é•¿å…¶ç§»åŠ¨è·ç¦»ï¼Œè®©ç‚®å¡”æŒç»­è½°å‡»æ€ªå…½ä»¥è¾¾æˆæ›´é«˜è¾“å‡ºã€‚"),
+ _T(""), // ç©ºè¡Œåˆ†éš”
+ _T("é«˜é˜¶ç©æ³•æç¤ºï¼šé€‰æ‹©æ­¦å™¨éƒ¨ç½²è‡³åœ°å›¾åï¼Œæ€ªç‰©å°†å‘åŸºåœ°å‘èµ·è¿›æ”»ã€‚æ¸¸æˆæä¾›å…·å¤‡æ”»å‡»èƒ½åŠ›çš„å¤§ç‚®"),
+ _T("é˜²å¾¡å·¥äº‹çš„è·¯éšœã€‚æ ¸å¿ƒç­–ç•¥ä¸ºåˆç†å¸ƒç½®å¤§ç‚®ï¼Œå¹¶é…åˆè·¯éšœå¢™é™åˆ¶æ€ªç‰©è¡Œè¿›è·¯çº¿ï¼Œæœ€å¤§åŒ–æ”»å‡»æ•ˆç‡ã€‚"),
+ _T("æ‰€æœ‰æ­¦å™¨å¯è‡ªåŠ¨æ”»å‡»å°„ç¨‹èŒƒå›´å†…çš„æ€ªç‰©ï¼Œä¸”å¯éšæ—¶å¯¹å·²éƒ¨ç½²æ­¦å™¨è¿›è¡Œå‡çº§ï¼›é‡‘å¸ç”¨äºè´­ä¹°å’Œå‡çº§æ­¦å™¨ï¼Œæ¶ˆç­æ€ªç‰©å¯è·å–é‡‘å¸å¥–åŠ±ã€‚"),
+ _T("è‹¥æ€ªç‰©æŠµè¾¾ç»ˆç‚¹ï¼Œç©å®¶ç”Ÿå‘½å€¼å°†æ‰£é™¤ï¼›æ‹†é™¤ä»»æ„å¤§ç‚®å¯è¿”è¿˜50%è´­ç½®é‡‘å¸ã€‚"),
+ _T(""), // ç©ºè¡Œåˆ†éš”
+ _T("æ¸©é¦¨æç¤ºï¼šæŠµåˆ¶ä¸è‰¯æ¸¸æˆï¼Œæ‹’ç»ç›—ç‰ˆæ¸¸æˆï¼Œæ³¨æ„è‡ªæˆ‘ä¿æŠ¤ï¼Œè°¨é˜²å—éª—ä¸Šå½“ï¼›é€‚åº¦æ¸¸æˆç›Šè„‘ï¼Œæ²‰è¿·æ¸¸æˆä¼¤èº«ï¼Œ"),
+ _T("åˆç†å®‰æ’æ—¶é—´ï¼Œäº«å—å¥åº·ç”Ÿæ´»ã€‚")
 	};
 
-	// ÖğĞĞ»æÖÆÎÄ±¾
-	int lineCount = sizeof(rules) / sizeof(rules[0]); // ¼ÆËã×ÜĞĞÊı
+	// é€è¡Œç»˜åˆ¶æ–‡æœ¬
+	int lineCount = sizeof(rules) / sizeof(rules[0]); // è®¡ç®—æ€»è¡Œæ•°
 	for (int i = 0; i < lineCount; i++)
 	{
-		outtextxy(x, y + i * lineHeight, rules[i]); // °´ĞĞ¸ßÆ«ÒÆ»æÖÆ
+		outtextxy(x, y + i * lineHeight, rules[i]); // æŒ‰è¡Œé«˜åç§»ç»˜åˆ¶
 	}
 }
 void DrawText2()
 {
 	setbkmode(TRANSPARENT);
-	settextstyle(20, 0, _T("Î¢ÈíÑÅºÚ"));
+	settextstyle(20, 0, _T("å¾®è½¯é›…é»‘"));
 	settextcolor(BLACK);
-	Interface1(650, 500, 80, 60, _T("·µ»Ø"));
+	Interface1(650, 500, 80, 60, _T("è¿”å›"));
 	 DrawGameRules(50, 100, 25);
-	// ×Ö·û´®¼Ó_T()
+	// å­—ç¬¦ä¸²åŠ _T()
 }
 
 void GameButton() {
-	Interface1(width/3, height/3, 280, 100, _T("¿ªÊ¼ÓÎÏ·")); 
-	Interface1(width/3, height*19/30, 280, 100, _T("ÓÎÏ·¹æÔò"));
-	Interface2(10, 10, 100, 50, _T("·µ»Ø"));
+	Interface1(width/3, height/3, 280, 100, _T("å¼€å§‹æ¸¸æˆ")); 
+	Interface1(width/3, height*19/30, 280, 100, _T("æ¸¸æˆè§„åˆ™"));
+	Interface2(10, 10, 100, 50, _T("è¿”å›"));
 
 }
 
 
 
-//int AttackDamage = 5;     // µ¥´Î¹¥»÷¿Û5Ñª
+//int AttackDamage = 5;     // å•æ¬¡æ”»å‡»æ‰£5è¡€
 //int currentHealth = CurrentHP;
 //int accumulatedDamage = 0;
-//int enemyKillCount = 0;      // µĞÈËËÀÍöÊı³õÊ¼Îª0
+//int enemyKillCount = 0;      // æ•Œäººæ­»äº¡æ•°åˆå§‹ä¸º0
 
-// »ı·ÖÀÛ¼Ó£¬µ±Ç°»ı·ÖÊı£¬ÓÎÏ·µÈ¼¶ÅĞ¶Ï
+// ç§¯åˆ†ç´¯åŠ ï¼Œå½“å‰ç§¯åˆ†æ•°ï¼Œæ¸¸æˆç­‰çº§åˆ¤æ–­
 
-// ¢Ù µ±Ç°×Ü»ı·Ö³õÊ¼Öµ£¬ÓÎÏ·³õÊ¼×Ü·ÖÎª0
+// â‘  å½“å‰æ€»ç§¯åˆ†åˆå§‹å€¼ï¼Œæ¸¸æˆåˆå§‹æ€»åˆ†ä¸º0
 int currentTotalScore = 0;
-// ¢Ú ±¾´ÎÀÛ¼Ó·ÖÊı³õÊ¼Öµ£¨³õÊ¼´ıÀÛ¼ÓµÃ·ÖÎª0£¬ºóĞø¿ÉÍ¨¹ıµĞÈËËÀÍöÊıµÈ¸üĞÂ£©
+// â‘¡ æœ¬æ¬¡ç´¯åŠ åˆ†æ•°åˆå§‹å€¼ï¼ˆåˆå§‹å¾…ç´¯åŠ å¾—åˆ†ä¸º0ï¼Œåç»­å¯é€šè¿‡æ•Œäººæ­»äº¡æ•°ç­‰æ›´æ–°ï¼‰
 int scoreAmount = 0;
-// ¢Û ½ÓÊÕĞÂ×Ü»ı·ÖµÄ±äÁ¿³õÊ¼Öµ£¨Õ¼Î»³õÊ¼»¯£¬»á±»º¯Êı¸²¸Ç£©
+// â‘¢ æ¥æ”¶æ–°æ€»ç§¯åˆ†çš„å˜é‡åˆå§‹å€¼ï¼ˆå ä½åˆå§‹åŒ–ï¼Œä¼šè¢«å‡½æ•°è¦†ç›–ï¼‰
 int newTotalScore = 0;
 
 
-// Íâ²¿±äÁ¿ÉùÃ÷£¨µÈ¼¶³õÊ¼1£¬»ı·Ö³õÊ¼0£©
-int Current_Level = 1;//ÓÎÏ·µÈ¼¶£¬³õÊ¼Îª1
-int Game_Score = 0;// ÓÎÏ·»ı·Ö£¬³õÊ¼ÖµÎª0
-// ĞÂÔö£ºÈ«¾Ö±äÁ¿¼ÇÂ¼×î¸ß»ı·Ö£¨³õÊ¼0£©
+// å¤–éƒ¨å˜é‡å£°æ˜ï¼ˆç­‰çº§åˆå§‹1ï¼Œç§¯åˆ†åˆå§‹0ï¼‰
+int Current_Level = 1;//æ¸¸æˆç­‰çº§ï¼Œåˆå§‹ä¸º1
+int Game_Score = 0;// æ¸¸æˆç§¯åˆ†ï¼Œåˆå§‹å€¼ä¸º0
+// æ–°å¢ï¼šå…¨å±€å˜é‡è®°å½•æœ€é«˜ç§¯åˆ†ï¼ˆåˆå§‹0ï¼‰
 int Highest_Game_Score = 0;
 
-// 1. »ı·Ö¼ÆËãÓëÀÛ¼ÓºËĞÄº¯Êı£¨ĞŞÕıÔ­º¯ÊıÓï·¨´íÎó£¬Ê¹ÓÃÍâ²¿½á¹¹Ìå£©
+// 1. ç§¯åˆ†è®¡ç®—ä¸ç´¯åŠ æ ¸å¿ƒå‡½æ•°ï¼ˆä¿®æ­£åŸå‡½æ•°è¯­æ³•é”™è¯¯ï¼Œä½¿ç”¨å¤–éƒ¨ç»“æ„ä½“ï¼‰
 
 void CalculateAndAddScoreByEnemy(const struct Dead_enemy_count* pDeadEnemyCount) {
      
     if (pDeadEnemyCount == NULL) {
-        printf("´íÎó£º´«ÈëµÄµĞÈËËÀÍö¼ÆÊı½á¹¹ÌåÖ¸ÕëÎª¿Õ£¡\n");
+        printf("é”™è¯¯ï¼šä¼ å…¥çš„æ•Œäººæ­»äº¡è®¡æ•°ç»“æ„ä½“æŒ‡é’ˆä¸ºç©ºï¼\n");
         return;
     }
 
-    // °´¹æÔò¼ÆËã¸÷ÀàµĞÈËËÀÍö¶ÔÓ¦µÄ»ı·Ö£¨Ò»¼¶+10¡¢¶ş¼¶+25¡¢Èı¼¶+40£©
+    // æŒ‰è§„åˆ™è®¡ç®—å„ç±»æ•Œäººæ­»äº¡å¯¹åº”çš„ç§¯åˆ†ï¼ˆä¸€çº§+10ã€äºŒçº§+25ã€ä¸‰çº§+40ï¼‰
     int addScore = 0;
-    addScore += pDeadEnemyCount->enemy_grade_1 * 10;   // Ò»¼¶µĞÈË»ı·Ö
-    addScore += pDeadEnemyCount->enemy_grade_2 * 25;   // ¶ş¼¶µĞÈË»ı·Ö
-    addScore += pDeadEnemyCount->enemy_grade_3 * 40;   // Èı¼¶µĞÈË»ı·Ö
+    addScore += pDeadEnemyCount->enemy_grade_1 * 10;   // ä¸€çº§æ•Œäººç§¯åˆ†
+    addScore += pDeadEnemyCount->enemy_grade_2 * 25;   // äºŒçº§æ•Œäººç§¯åˆ†
+    addScore += pDeadEnemyCount->enemy_grade_3 * 40;   // ä¸‰çº§æ•Œäººç§¯åˆ†
 
-    // ÀÛ¼ÓÖÁÈ«¾ÖÓÎÏ·»ı·ÖGame_Score
+    // ç´¯åŠ è‡³å…¨å±€æ¸¸æˆç§¯åˆ†Game_Score
     Game_Score += addScore;
 
-    // ¸üĞÂ×î¸ß»ı·Ö£¨½öµ±µ±Ç°»ı·Ö³¬¹ıÀúÊ·×î¸ßÊ±¸üĞÂ£©
+    // æ›´æ–°æœ€é«˜ç§¯åˆ†ï¼ˆä»…å½“å½“å‰ç§¯åˆ†è¶…è¿‡å†å²æœ€é«˜æ—¶æ›´æ–°ï¼‰
     if (Game_Score > Highest_Game_Score) {
         Highest_Game_Score = Game_Score;
     }
 
-    // µÈ¼¶ÅĞ¶¨Óë¸üĞÂ£¨ÑÏ¸ñ×ñÑ­ÄãµÄ¹æÔò£©
+    // ç­‰çº§åˆ¤å®šä¸æ›´æ–°ï¼ˆä¸¥æ ¼éµå¾ªä½ çš„è§„åˆ™ï¼‰
     if (Game_Score <= 100) {
-        Current_Level = 1;  // »ı·Ö¡Ü100 ¡ú LV.1
+        Current_Level = 1;  // ç§¯åˆ†â‰¤100 â†’ LV.1
     }
     else if (Game_Score > 100 && Game_Score <= 300) {
-        Current_Level = 2;  // 100<»ı·Ö¡Ü300 ¡ú LV.2
+        Current_Level = 2;  // 100<ç§¯åˆ†â‰¤300 â†’ LV.2
     }
     else {
-        Current_Level = 3;  // »ı·Ö>300 ¡ú LV.3
+        Current_Level = 3;  // ç§¯åˆ†>300 â†’ LV.3
     }
 }
 
-// 2. ¶ÔÍâÌá¹©»ı·Ö/µÈ¼¶Êı¾İµÄ½Ó¿Úº¯Êı£¨·½±ãÆäËûÄ£¿éµ÷ÓÃ£©
+// 2. å¯¹å¤–æä¾›ç§¯åˆ†/ç­‰çº§æ•°æ®çš„æ¥å£å‡½æ•°ï¼ˆæ–¹ä¾¿å…¶ä»–æ¨¡å—è°ƒç”¨ï¼‰
 void GetGameScoreData(int* pCurrentScore, int* pHighestScore, int* pCurrentLevel) {
     
     if (pCurrentScore != NULL) {
@@ -177,17 +177,17 @@ void GetGameScoreData(int* pCurrentScore, int* pHighestScore, int* pCurrentLevel
 
 }
 
-// ĞÂÔö£º¶ÁÈ¡²¢¸üĞÂÀúÊ·×î¸ß·ÖÎÄ¼şµÄº¯Êı
+// æ–°å¢ï¼šè¯»å–å¹¶æ›´æ–°å†å²æœ€é«˜åˆ†æ–‡ä»¶çš„å‡½æ•°
 void UpdateHighestScoreFile() {
-    const char* filename = "ÀúÊ·×î¸ß·Ö";  // ÎÄ¼şÃû
-    int file_highest_score = 0;            // ´æ´¢ÎÄ¼şÖĞµÄÀúÊ·×î¸ß·Ö
+    const char* filename = "å†å²æœ€é«˜åˆ†";  // æ–‡ä»¶å
+    int file_highest_score = 0;            // å­˜å‚¨æ–‡ä»¶ä¸­çš„å†å²æœ€é«˜åˆ†
     FILE* fp = NULL;
-    errno_t err;  // ½ÓÊÕ°²È«º¯ÊıµÄ´íÎóÂë
+    errno_t err;  // æ¥æ”¶å®‰å…¨å‡½æ•°çš„é”™è¯¯ç 
 
-    // µÚÒ»²½£º¶ÁÈ¡ÎÄ¼şÖĞµÄÀúÊ·×î¸ß·Ö
-    err = fopen_s(&fp, filename, "r");  // Ìæ»»fopenÎªfopen_s
-    if (err == 0 && fp != NULL) {       // ´íÎóÂëÎª0±íÊ¾´ò¿ª³É¹¦
-        fscanf_s(fp, "%d", &file_highest_score);  // Ìæ»»fscanfÎªfscanf_s
+    // ç¬¬ä¸€æ­¥ï¼šè¯»å–æ–‡ä»¶ä¸­çš„å†å²æœ€é«˜åˆ†
+    err = fopen_s(&fp, filename, "r");  // æ›¿æ¢fopenä¸ºfopen_s
+    if (err == 0 && fp != NULL) {       // é”™è¯¯ç ä¸º0è¡¨ç¤ºæ‰“å¼€æˆåŠŸ
+        fscanf_s(fp, "%d", &file_highest_score);  // æ›¿æ¢fscanfä¸ºfscanf_s
         fclose(fp);
         fp = NULL;
     }
@@ -195,9 +195,9 @@ void UpdateHighestScoreFile() {
         file_highest_score = 0;
     }
 
-    // µÚ¶ş²½£º±È½Ï²¢¸üĞÂÎÄ¼ş
+    // ç¬¬äºŒæ­¥ï¼šæ¯”è¾ƒå¹¶æ›´æ–°æ–‡ä»¶
     if (Highest_Game_Score > file_highest_score) {
-        err = fopen_s(&fp, filename, "w");  // Ğ´ÈëÄ£Ê½ÓÃfopen_s
+        err = fopen_s(&fp, filename, "w");  // å†™å…¥æ¨¡å¼ç”¨fopen_s
         if (err == 0 && fp != NULL) {
             fprintf(fp, "%d", Highest_Game_Score);
             fclose(fp);
@@ -205,54 +205,54 @@ void UpdateHighestScoreFile() {
             file_highest_score = Highest_Game_Score;
         }
         else {
-            printf("´íÎó£ºÎŞ·¨´ò¿ªÎÄ¼ş %s ½øĞĞĞ´Èë£¡\n", filename);
+            printf("é”™è¯¯ï¼šæ— æ³•æ‰“å¼€æ–‡ä»¶ %s è¿›è¡Œå†™å…¥ï¼\n", filename);
         }
     }
 }
 
-// Ö÷º¯Êı²âÊÔ£¨¿ÉÑ¡£¬ÓÃÓÚÑéÖ¤¹¦ÄÜ£©
+// ä¸»å‡½æ•°æµ‹è¯•ï¼ˆå¯é€‰ï¼Œç”¨äºéªŒè¯åŠŸèƒ½ï¼‰
 int main() {
-    // Ä£ÄâµĞÈËËÀÍöÊı¾İ
+    // æ¨¡æ‹Ÿæ•Œäººæ­»äº¡æ•°æ®
     struct Dead_enemy_count enemy_count = { 5, 4, 3 };
 
-    // ¼ÆËã»ı·Ö
+    // è®¡ç®—ç§¯åˆ†
     CalculateAndAddScoreByEnemy(&enemy_count);
 
-    // »ñÈ¡²¢´òÓ¡µ±Ç°ÓÎÏ·Êı¾İ
+    // è·å–å¹¶æ‰“å°å½“å‰æ¸¸æˆæ•°æ®
     int curr_score, highest_score, curr_level;
     GetGameScoreData(&curr_score, &highest_score, &curr_level);
-    printf("\nµ±Ç°ÓÎÏ·»ı·Ö£º%d\nµ±Ç°×î¸ß»ı·Ö£º%d\nµ±Ç°µÈ¼¶£º%d\n",
+    printf("\nå½“å‰æ¸¸æˆç§¯åˆ†ï¼š%d\nå½“å‰æœ€é«˜ç§¯åˆ†ï¼š%d\nå½“å‰ç­‰çº§ï¼š%d\n",
         curr_score, highest_score, curr_level);
 
-    // ¶ÁÈ¡²¢¸üĞÂÀúÊ·×î¸ß·ÖÎÄ¼ş
+    // è¯»å–å¹¶æ›´æ–°å†å²æœ€é«˜åˆ†æ–‡ä»¶
     UpdateHighestScoreFile();
 
     return 0;
 }
 
-// ²âÊÔÊ¾Àı£¨ÑéÖ¤¹¦ÄÜÓĞĞ§ĞÔ£©
+// æµ‹è¯•ç¤ºä¾‹ï¼ˆéªŒè¯åŠŸèƒ½æœ‰æ•ˆæ€§ï¼‰
 //int main() {
-//    // Ä£Äâ´ÓÓÎÏ·Ä£¿é»ñÈ¡µÄµĞÈËËÀÍöÊı¾İ£¨Íâ²¿½á¹¹ÌåÊµÀı£©
-//    struct Dead_enemy_count enemyDeadData1 = { 3, 1, 0 };  // 3¸öÒ»¼¶¡¢1¸ö¶ş¼¶¡¢0¸öÈı¼¶
+//    // æ¨¡æ‹Ÿä»æ¸¸æˆæ¨¡å—è·å–çš„æ•Œäººæ­»äº¡æ•°æ®ï¼ˆå¤–éƒ¨ç»“æ„ä½“å®ä¾‹ï¼‰
+//    struct Dead_enemy_count enemyDeadData1 = { 3, 1, 0 };  // 3ä¸ªä¸€çº§ã€1ä¸ªäºŒçº§ã€0ä¸ªä¸‰çº§
 //
-//    // µÚÒ»´Î¼ÆËã²¢ÀÛ¼Ó»ı·Ö
+//    // ç¬¬ä¸€æ¬¡è®¡ç®—å¹¶ç´¯åŠ ç§¯åˆ†
 //    CalculateAndAddScoreByEnemy(&enemyDeadData1);
-//    printf("µÚÒ»´ÎµĞÈËËÀÍöºó£º\n");
+//    printf("ç¬¬ä¸€æ¬¡æ•Œäººæ­»äº¡åï¼š\n");
 //
-//    // Í¨¹ı½Ó¿Ú»ñÈ¡»ı·ÖĞÅÏ¢
+//    // é€šè¿‡æ¥å£è·å–ç§¯åˆ†ä¿¡æ¯
 //    int currScore, highScore, currLevel;
 //    GetGameScoreData(&currScore, &highScore, &currLevel);
-//    printf("µ±Ç°»ı·Ö£º%d\n×î¸ß»ı·Ö£º%d\nµ±Ç°µÈ¼¶£ºLV.%d\n\n",
+//    printf("å½“å‰ç§¯åˆ†ï¼š%d\næœ€é«˜ç§¯åˆ†ï¼š%d\nå½“å‰ç­‰çº§ï¼šLV.%d\n\n",
 //        currScore, highScore, currLevel);
 //
-//    // Ä£Äâ¸ü¶àµĞÈËËÀÍöÊı¾İ
-//    struct Dead_enemy_count enemyDeadData2 = { 4, 5, 2 };  // 4¸öÒ»¼¶¡¢5¸ö¶ş¼¶¡¢2¸öÈı¼¶
+//    // æ¨¡æ‹Ÿæ›´å¤šæ•Œäººæ­»äº¡æ•°æ®
+//    struct Dead_enemy_count enemyDeadData2 = { 4, 5, 2 };  // 4ä¸ªä¸€çº§ã€5ä¸ªäºŒçº§ã€2ä¸ªä¸‰çº§
 //    CalculateAndAddScoreByEnemy(&enemyDeadData2);
-//    printf("µÚ¶ş´ÎµĞÈËËÀÍöºó£º\n");
+//    printf("ç¬¬äºŒæ¬¡æ•Œäººæ­»äº¡åï¼š\n");
 //
-//    // ÔÙ´Î»ñÈ¡²¢´òÓ¡»ı·ÖĞÅÏ¢
+//    // å†æ¬¡è·å–å¹¶æ‰“å°ç§¯åˆ†ä¿¡æ¯
 //    GetGameScoreData(&currScore, &highScore, &currLevel);
-//    printf("µ±Ç°»ı·Ö£º%d\n×î¸ß»ı·Ö£º%d\nµ±Ç°µÈ¼¶£ºLV.%d\n",
+//    printf("å½“å‰ç§¯åˆ†ï¼š%d\næœ€é«˜ç§¯åˆ†ï¼š%d\nå½“å‰ç­‰çº§ï¼šLV.%d\n",
 //        currScore, highScore, currLevel);
 //
 //    return 0;
@@ -264,3 +264,4 @@ int main() {
 
 
 	
+
