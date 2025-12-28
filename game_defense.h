@@ -13,12 +13,32 @@
 //粉色(RGB(234,54,128))=大炮类型3颜色
 //薄荷绿(RGB(60,179,113))=升级按钮颜色
 //猩红(RGB(220,20,60))=移除按钮颜色
+//一类大炮：圆心坐标（Game_width / 8, (2 * Game_height) / 3 + height / 3）半径：Gap
+//二类大炮：圆心坐标（Game_width * 3 / 8, (2 * Game_height) / 3 + height / 3），半径：Gap
+//三类大炮：圆心坐标（Game_width * 5 / 8, (2 * Game_height) / 3 + height / 3），半径：Gap
 #define DEPLOY_BROWN RGB(185,128,71)//可部署
 #define HOVER_GREEN RGB(34,139,34)//悬浮
 #define TOWER1_ATTACK_RADIUS 2//大炮1攻击范围（以格子为单位）
 #define TOWER2_ATTACK_RADIUS 1//大炮2攻击范围（以格子为单位）
 #define TOWER3_ATTACK_RADIUS 0//大炮3攻击范围（以格子为单位）
 //按钮区域
+
+typedef struct {
+	int x1, y1;  // 棕色方块左上角坐标
+	int x2, y2;  // 棕色方块右下角坐标
+	int is_hover; // 是否被鼠标悬停
+} BrownBlock;
+
+
+#define MAP_COUNT 3 //地图数量
+extern int current_map_num;//当前地图编号
+#define MAX_BLOCKS 1000
+extern BrownBlock blocks_map1[MAX_BLOCKS];
+extern BrownBlock blocks_map2[MAX_BLOCKS];
+extern BrownBlock blocks_map3[MAX_BLOCKS];
+extern int block_count_map1;
+extern int block_count_map2;
+extern int block_count_map3;
 
 typedef enum {
 	tower1,
@@ -46,12 +66,6 @@ typedef struct {
 	int attack_radius;
 }DefenseUnit;//每种防御塔的攻击力，射程范围，价格
 
-typedef struct {
-	int x1, y1;  // 棕色方块左上角坐标
-	int x2, y2;  // 棕色方块右下角坐标
-	bool is_hover; // 是否被鼠标悬停
-} BrownBlock;
-
 // 大炮升级配置（等级越高攻击力增量越小，共3级）
 typedef struct {
 	int level;
@@ -65,7 +79,7 @@ typedef struct {
 	int level;			// 当前等级
 	int current_attack;	// 当前攻击力（基础+升级增量）
 	GridRange attack_range; // 射程范围
-	bool is_selected;	// 是否被选中
+	int is_selected;	// 是否被选中
 } Cannon;
 
 

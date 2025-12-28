@@ -18,12 +18,17 @@ UpgradeConfig upgradeDate[] = {
     {3,0}		// 3级满级
 };
 
-BrownBlock blocks[1000]; // 存储所有棕色方块，足够大的数组
-int block_count = 0;     // 实际方块数量
+int current_map_num = 1; // 默认地图编号为1
+BrownBlock blocks_map1[MAX_BLOCKS];
+BrownBlock blocks_map2[MAX_BLOCKS];
+BrownBlock blocks_map3[MAX_BLOCKS];
+int block_count_map1 = 0;
+int block_count_map2 = 0;
+int block_count_map3 = 0; 
 Cannon cannons[MAX_CANNON];	// 大炮数组
 int cannon_count = 0;			// 当前大炮数量
 int selected_idx = -1;			// 选中的大炮索引
-int selected_tower_type = 0;		// 选中的防御塔类型(0=未选择大炮，1=tower1，2=tower2，3=tower3)
+int selected_tower_type = tower1;
 
 // 错误提示文字绘制
 void drawTip(const TCHAR* text) {
@@ -79,126 +84,188 @@ DefenseUnit GetDefense(int* totalmoney)
 	//MOUSEMSG m = GetMouseMsg();
 	//if (m.uMsg != WM_LBUTTONDOWN) return invalidUnit;//仅处理鼠标左键点击事件
 	//DefenseType type = CheckClickedTower(m.x, m.y);
-	if (selected_tower_type == 0)return invalidUnit;//未选择防御塔类型
     if (*totalmoney < tower[selected_tower_type].price) return invalidUnit;
 	return tower[selected_tower_type];
 }
 
 
-// 根据地图编号得到棕色方块坐标
+// 根据地图编号初始化对应地图的棕色方块数组
 void generate_blocks(int random_num) {
-    block_count = 0; // 重置方块数量
+    current_map_num = random_num; // 更新当前地图编号
     Point* pos = NULL;
     int pos_count = 0;
+
     if (random_num == 1) {
+        block_count_map1 = 0; // 重置地图1的方块数量
         static Point Friendly_BasePosMap1[] = {
             {5,3},{5,4} ,{5,5},{5,6},{5,7},{5,8},{5,9},{5,10},{5,11},
             {6,3},{6,4} ,{6,5},{6,6},{6,7},{6,8},{6,9},{6,10},{6,11},
             {7,3},{7,4} ,{7,5},{7,6},{7,7},{7,8},{7,9},{7,10},{7,11},
             {13,3},{13,4} ,{13,5},{13,6},{13,7},{13,8},{13,9},{13,10},{13,11},
             {14,3},{14,4} ,{14,5},{14,6},{14,7},{14,8},{14,9},{14,10},{14,11},
-            {15,3},{15,4} ,{15,5},{15,6},{15,7},{15,8},{15,9},{15,10},{15,11} };
+            {15,3},{15,4} ,{15,5},{15,6},{15,7},{15,8},{15,9},{15,10},{15,11}
+        };
         pos = Friendly_BasePosMap1;
         pos_count = sizeof(Friendly_BasePosMap1) / sizeof(Point);
+        // 填充地图1的方块数组
+        for (int i = 0; i < pos_count && block_count_map1 < MAX_BLOCKS; i++) {
+            blocks_map1[block_count_map1].x1 = pos[i].cannon_x * Gap;
+            blocks_map1[block_count_map1].y1 = pos[i].cannon_y * Gap;
+            blocks_map1[block_count_map1].x2 = blocks_map1[block_count_map1].x1 + Gap;
+            blocks_map1[block_count_map1].y2 = blocks_map1[block_count_map1].y1 + Gap;
+            blocks_map1[block_count_map1].is_hover = 0;
+            block_count_map1++;
+        }
     }
-    if (random_num == 2) {
+    else if (random_num == 2) {
+        block_count_map2 = 0; // 重置地图2的方块数量
         Point Friendly_BasePosMap2[] = {
             {0,4},{0,5},{0,6},{0,7},{0,8},{0,9},{0,10},{0,11},{0,12},{0,13},{0,14},
             {1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{1,11},{1,12},{1,13},{1,14},
-            {2,7},{2,8},{2,9},{2,10},{2,11},{2,12},{2,13},{2,14},//以上是左侧三列防御区域，从上至下
-            {3,8},{3,9},//左侧防御区突出的两处
-            {17,8},{17,9},//右侧防御区突出的两处
+            {2,7},{2,8},{2,9},{2,10},{2,11},{2,12},{2,13},{2,14},
+            {3,8},{3,9},
+            {17,8},{17,9},
             {18,4},{18,5},{18,6},
             {18,7},{18,8},{18,9},{18,10},{18,11},{18,12},{18,13},{18,14},
             {19,4},{19,5},{19,6},{19,7},{19,8},{19,9},{19,10},{19,11},{19,12},{19,13},{19,14},
-            {20,4},{20,5},{20,6},{20,7},{20,8},{20,9},{20,10},{20,11},{20,12},{20,13},{20,14},//以上是右侧三列防御区域，从上至下
-            {3,13},{4,13},{5,13},{6,13},{14,13},{15,13},{16,13},{17,13},//底部突出部分左侧和右侧
-            {3,14},{4,14},{5,14},{6,14},{7,14},{8,14},{9,14},{10,14},{11,14},{12,14},{13,14},{14,14},{15,14},{16,14},{17,14},{18,14},{19,14},{20,14}// 底部防御区域
+            {20,4},{20,5},{20,6},{20,7},{20,8},{20,9},{20,10},{20,11},{20,12},{20,13},{20,14},
+            {3,13},{4,13},{5,13},{6,13},{14,13},{15,13},{16,13},{17,13},
+            {3,14},{4,14},{5,14},{6,14},{7,14},{8,14},{9,14},{10,14},{11,14},{12,14},{13,14},{14,14},{15,14},{16,14},{17,14},{18,14},{19,14},{20,14}
         };
         pos = Friendly_BasePosMap2;
         pos_count = sizeof(Friendly_BasePosMap2) / sizeof(Point);
+        // 填充地图2的方块数组
+        for (int i = 0; i < pos_count && block_count_map2 < MAX_BLOCKS; i++) {
+            blocks_map2[block_count_map2].x1 = pos[i].cannon_x * Gap;
+            blocks_map2[block_count_map2].y1 = pos[i].cannon_y * Gap;
+            blocks_map2[block_count_map2].x2 = blocks_map2[block_count_map2].x1 + Gap;
+            blocks_map2[block_count_map2].y2 = blocks_map2[block_count_map2].y1 + Gap;
+            blocks_map2[block_count_map2].is_hover = 0;
+            block_count_map2++;
+        }
     }
-    if (random_num == 3) {
+    else if (random_num == 3) {
+        block_count_map3 = 0; // 重置地图3的方块数量
         Point Friendly_BasePosMap3[] = {
             {7,0},{8,0},{9,0},{10,0},{11,0},{12,0},{13,0},
             {8,1},{9,1},{10,1},{11,1},{12,1},
             {9,2},{10,2},{11,2},
-            {10,3},//以上是上部四行防御区域，从左至右
+            {10,3},
             {7,14},{8,14},{9,14},{10,14},{11,14},{12,14},{13,14},
             {8,13},{9,13},{10,13},{11,13},{12,13},
             {9,12},{10,12},{11,12},
-            {10,11},//以上是下部四行防御区域，从左至右
+            {10,11},
             {4,4},{5,4},{6,4},
-            {5,5},{6,5},{7,5},//左上侧Z型区域
+            {5,5},{6,5},{7,5},
             {14,4},{15,4},{16,4},
-            {13,5},{14,5},{15,5},//右上侧Z型区域
+            {13,5},{14,5},{15,5},
             {4,10},{5,10},{6,10},
-            {5,9},{6,9},{7,9},//左下侧Z型区域
+            {5,9},{6,9},{7,9},
             {14,10},{15,10},{16,10},
-            {13,9},{14,9},{15,9} //右下侧Z型区域
+            {13,9},{14,9},{15,9}
         };
         pos = Friendly_BasePosMap3;
         pos_count = sizeof(Friendly_BasePosMap3) / sizeof(Point);
-    }
-    for (int i = 0; i < pos_count && block_count < 1000; i++) {
-        blocks[block_count].x1 = pos[i].cannon_x * Gap;
-        blocks[block_count].y1 = pos[i].cannon_y * Gap;
-        blocks[block_count].x2 = blocks[block_count].x1 + Gap;
-        blocks[block_count].y2 = blocks[block_count].y1 + Gap;
-        blocks[block_count].is_hover = false;
-        block_count++;
+        // 填充地图3的方块数组
+        for (int i = 0; i < pos_count && block_count_map3 < MAX_BLOCKS; i++) {
+            blocks_map3[block_count_map3].x1 = pos[i].cannon_x * Gap;
+            blocks_map3[block_count_map3].y1 = pos[i].cannon_y * Gap;
+            blocks_map3[block_count_map3].x2 = blocks_map3[block_count_map3].x1 + Gap;
+            blocks_map3[block_count_map3].y2 = blocks_map3[block_count_map3].y1 + Gap;
+            blocks_map3[block_count_map3].is_hover = 0;
+            block_count_map3++;
+        }
     }
 }
 
+
 // 检测鼠标悬停并绘制方块
 void draw_blocks(int mouse_x,int mouse_y) {
-    if (selected_tower_type != 0)//只有选中大炮类型时才检测悬停
-    {
         int grid_mouse_x = mouse_x / Gap * Gap;
         int grid_mouse_y = mouse_y / Gap * Gap;
+		// 根据当前地图编号选择对应的方块数组和数量
+		BrownBlock* current_blocks = NULL;
+		int current_block_count = 0;
+        switch(current_map_num) {
+            case 1:
+                current_blocks = blocks_map1;
+                current_block_count = block_count_map1;
+                break;
+            case 2:
+                current_blocks = blocks_map2;
+                current_block_count = block_count_map2;
+                break;
+            case 3:
+                current_blocks = blocks_map3;
+                current_block_count = block_count_map3;
+                break;
+            default:
+                return; // 无效地图编号
+		}
         // 绘制方块（根据悬停状态切换颜色）
-        for (int i = 0; i < block_count; i++) {
-            if (grid_mouse_x >= blocks[i].x1 && grid_mouse_y < blocks[i].x2 && grid_mouse_y >= blocks[i].y1 && grid_mouse_y < blocks[i].y2) {
-                blocks[i].is_hover = true;
+        for (int i = 0; i < current_block_count; i++) {
+            if (grid_mouse_x >= current_blocks[i].x1 && grid_mouse_y < current_blocks[i].x2 && grid_mouse_y >= current_blocks[i].y1 && grid_mouse_y < current_blocks[i].y2) {
+               current_blocks[i].is_hover = 1;
             }
             else {
-				blocks[i].is_hover = false;
+				current_blocks[i].is_hover = 0;
             }
-            if (blocks[i].is_hover) {
+
+            if (current_blocks[i].is_hover) {
                 setfillcolor(GREEN); // 绿色悬停颜色
             }
             else {
 				setfillcolor(RGB(185, 128, 71)); //移开后恢复棕色 
 			}
-			fillrectangle(blocks[i].x1, blocks[i].y1, blocks[i].x2, blocks[i].y2);
+			fillrectangle(current_blocks[i].x1, current_blocks[i].y1, current_blocks[i].x2, current_blocks[i].y2);
         }
-    }
 }
 
 // 判断鼠标点击位置是否可部署大炮（返回1=可部署，0=不可部署）
 int canDeployCannon(int mouse_x, int mouse_y) {
-    // 1. 检测鼠标点击是否在棕色格子内
-    int target_block_idx = -1;
-    for (int i = 0; i < block_count; i++) 
-        if (mouse_x >= blocks[i].x1 && mouse_x <= blocks[i].x2 &&
-            mouse_y >= blocks[i].y1 && mouse_y <= blocks[i].y2) {
-            target_block_idx = i;
-            break;
+    int grid_mouse_x = mouse_x / Gap * Gap;
+    int grid_mouse_y = mouse_y / Gap * Gap;
+    // 根据当前地图编号选择对应的方块数组和数量
+    BrownBlock* current_blocks = NULL;
+    int current_block_count = 0;
+    switch (current_map_num) {
+    case 1:
+        current_blocks = blocks_map1;
+        current_block_count = block_count_map1;
+        break;
+    case 2:
+        current_blocks = blocks_map2;
+        current_block_count = block_count_map2;
+        break;
+    case 3:
+        current_blocks = blocks_map3;
+        current_block_count = block_count_map3;
+        break;
+    default:
+        return 0; // 无效地图编号
+        // 1. 检测鼠标点击是否在棕色格子内
+        int target_block_idx = -1;
+        for (int i = 0; i < current_block_count; i++)
+            if (grid_mouse_x >= current_blocks[i].x1 && grid_mouse_x <= current_blocks[i].x2 &&
+                grid_mouse_y >= current_blocks[i].y1 && grid_mouse_y <= current_blocks[i].y2) {
+                target_block_idx = i;
+                break;
+            }
+        // 不是棕色格子，直接返回false
+        if (target_block_idx == -1) {
+            return 0;
         }
-    // 不是棕色格子，直接返回false
-    if(target_block_idx == -1) {
-        return 0;
-    }
 
-    // 2. 检测该棕色格子是否已部署大炮
-    int block_x = blocks[target_block_idx].x1+Gap/2;
-    int block_y = blocks[target_block_idx].y1+Gap/2;
-    for (int i = 0; i < cannon_count; i++) {
-        if (cannons[i].x == block_x && cannons[i].y == block_y) {
-            return 0; // 已有大炮，不可部署
+        // 2. 检测该棕色格子是否已部署大炮
+        int block_x = current_blocks[target_block_idx].x1 + Gap / 2;
+        int block_y = current_blocks[target_block_idx].y1 + Gap / 2;
+        for (int i = 0; i < cannon_count; i++) {
+            if (cannons[i].x == block_x && cannons[i].y == block_y) {
+                return 0; // 已有大炮，不可部署
+            }
         }
+        return 1; // 可部署
     }
-    return 1; // 可部署
 }
 
 // 绘制所有大炮
@@ -236,7 +303,9 @@ void drawCannons(Cannon cannon) {
 
 // 部署大炮：先判断（GetDefense）→ 再扣钱 → 最后生成
 void deployCannon(int mouse_x, int mouse_y, int* totalmoney) {
-    if (!canDeployCannon(mouse_x, mouse_y) || cannon_count >= MAX_CANNON||selected_tower_type==invalidType||totalmoney==NULL) {
+	int grid_mouse_x = mouse_x / Gap * Gap;
+	int grid_mouse_y = mouse_y / Gap * Gap;
+    if (!canDeployCannon(grid_mouse_x, grid_mouse_y) || cannon_count >= MAX_CANNON||selected_tower_type==invalidType||totalmoney==NULL) {
         return;
     }
 
@@ -246,22 +315,42 @@ void deployCannon(int mouse_x, int mouse_y, int* totalmoney) {
         drawTip(_T("金币不足，无法部署该大炮！"));
         return;
     }
+	//根据当前地图编号选择对应的方块数组和数量
+	BrownBlock* current_blocks = NULL;
+	int current_block_count = 0;
+	switch (current_map_num) {
+	case 1:
+		current_blocks = blocks_map1;
+		current_block_count = block_count_map1;
+		break;
+	case 2:
+		current_blocks = blocks_map2;
+		current_block_count = block_count_map2;
+		break;
+	case 3:
+		current_blocks = blocks_map3;
+		current_block_count = block_count_map3;
+		break;
+	default:
+		return; // 无效地图编号
+	}
+
     // 找到点击的棕色格子坐标，生成大炮,执行扣钱操作
-    for (int i = 0; i < block_count; i++) {
-        if (mouse_x >= blocks[i].x1 && mouse_x <= blocks[i].x2 &&
-            mouse_y >= blocks[i].y1 && mouse_y <= blocks[i].y2) {
+    for (int i = 0; i < current_block_count; i++) {
+        if (grid_mouse_x >= current_blocks[i].x1 && grid_mouse_x <= current_blocks[i].x2 &&
+            grid_mouse_y >= current_blocks[i].y1 && grid_mouse_y <= current_blocks[i].y2) {
             cannons[cannon_count].type = (DefenseType)selected_tower_type;
-            cannons[cannon_count].x = blocks[i].x1 + Gap / 2; // 大炮居中显示
-            cannons[cannon_count].y = blocks[i].y1 + Gap / 2;
+            cannons[cannon_count].x = current_blocks[i].x1 + Gap / 2; // 大炮居中显示
+            cannons[cannon_count].y = current_blocks[i].y1 + Gap / 2;
             cannons[cannon_count].level = 1;
             cannons[cannon_count].current_attack = unit.attack;
-			int grid_x = blocks[i].x1 / Gap;
-            int grid_y = blocks[i].y1 / Gap;
+			int grid_x = current_blocks[i].x1 / Gap;
+            int grid_y = current_blocks[i].y1 / Gap;
 			cannons[cannon_count].attack_range = calcTowerGridRange(grid_x, grid_y,unit.attack_radius);
             *totalmoney -= unit.price;
-			cannons[cannon_count].is_selected = false;// 默认未选中
-			drawCannons(cannons[cannon_count]);// 立即绘制新部署的大炮
+			cannons[cannon_count].is_selected = 0;// 默认未选中
             cannon_count++;
+            selected_tower_type = invalidType;
             break;
         }
     }
@@ -269,18 +358,20 @@ void deployCannon(int mouse_x, int mouse_y, int* totalmoney) {
 
 // 选中大炮
 void selectCannon(int mouse_x, int mouse_y) {
+    int grid_mouse_x = mouse_x / Gap * Gap;
+	int grid_mouse_y = mouse_y / Gap * Gap;
     // 取消之前选中的大炮
     if (selected_idx != -1) {
-        cannons[selected_idx].is_selected = false;
+        cannons[selected_idx].is_selected = 0;
 		drawCannons(cannons[selected_idx]);
         selected_idx = -1;
     }
     // 检测点击的大炮
     for (int i = 0; i < cannon_count; i++) {
-        int dx = mouse_x - cannons[i].x;
-        int dy = mouse_y - cannons[i].y;
+        int dx = grid_mouse_x - cannons[i].x;
+        int dy = grid_mouse_y - cannons[i].y;
         if (dx * dx + dy * dy <= (Gap / 2) * (Gap / 2)) { // 大炮半径为Gap/2
-            cannons[i].is_selected = true;
+            cannons[i].is_selected = 1;
             selected_idx = i;
 			drawCannons(cannons[i]);
             break;
@@ -421,3 +512,7 @@ void removeCannon(int* totalmoney) {
 //        }
 //    }
 //}
+    int main()
+    {
+        return 0;
+    }
