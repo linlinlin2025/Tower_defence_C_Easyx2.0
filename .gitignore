@@ -40,3 +40,6 @@ game_main_A/game_main_A/game_defense.h
 game_main_A/game_main_A/game_enemy.cpp
 game_main_A/game_main_A/game_rule.cpp
 game_main_A/game_main_A/game_rule.h
+game_main_A/game_main_A/game_core.cpp
+game_main_A/game_main_A/game_core.h
+game_main_A/game_main_A/game_main.cpp

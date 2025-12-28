@@ -117,50 +117,7 @@ void Game_Init()
  * @return :无
  */
 
-void Game_Loop(int& game_over_flag, int& restart_flag, int& quit_flag)
-{ 
-	 Sleep(16); // 帧率控制
 
-    ExMessage game_msg;
-    while (peekmessage(&game_msg, EX_MOUSE | EX_KEY)) {
-	
-		if(game_msg.message == WM_LBUTTONDOWN)
-			cout << game_msg.x << " " << game_msg.y << endl;
-        if (game_msg.message == WM_KEYDOWN) {
-            switch (game_msg.vkcode) {
-                case VK_ESCAPE: // ESC退出
-                    quit_flag = 1;
-                    game_over_flag = 1;
-                    break;
-                case 'R': // R重开
-                    restart_flag = 1;
-                    game_over_flag = 1;
-                    break;
-            }
-        }
-
-        // 按钮检测
-		if (game_msg.message == WM_LBUTTONDOWN) {
-			// 先判断退出按钮（700,50 ~ 780,100）
-			if (game_msg.x >= 860 && game_msg.x <= 940 && game_msg.y >= 140 && game_msg.y <= 190) {
-				quit_flag = 1;
-				game_over_flag = 1;
-			} 
-			// 再判断重开按钮（700,120 ~ 780,170）
-			else if (game_msg.x >= 860 && game_msg.x <= 940 && game_msg.y >= 200 && game_msg.y <= 250) {
-				restart_flag = 1;
-				game_over_flag = 1;
-			}
-		}
-    }
-	
-	UpdateSidebarData(20,100);
-    // 游戏逻辑（可扩展）
-	// ********** 你的游戏主逻辑写在这里 **********
-    // 比如：玩家操作、碰撞检测、敌人AI等
-    // 当满足游戏结束条件时，调用TriggerGameOver()
-    // 示例：if (玩家生命值 <= 0) { TriggerGameOver(); }
-}
 
 /**
  * @biref :结束游戏
@@ -404,4 +361,14 @@ void UpdateSidebarData(int dataY, int newData)
 
 	// 4. 绘制到屏幕
 	putimage(localX, localY, &img);
+}
+
+int isPointInCircle(int px, int py, int cx, int cy, int radius) {
+	// 计算点到圆心的距离
+	int dx = px - cx;
+	int dy = py - cy;
+	int distanceSquared = dx * dx + dy * dy;
+
+	// 如果距离平方小于等于半径平方，则在圆内
+	return distanceSquared <= radius * radius;
 }

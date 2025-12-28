@@ -47,16 +47,6 @@ struct Defense_AreaPos {//防御单位可部署区域坐标结构体
 
 void Game_Init(void);
 
-/**
- * @biref :游戏主循环
- * @details :处理输入→调用各模块更新→调用绘制函数→控制帧率
- * @param :game_over_flag：int类型标志（0=游戏继续，1=游戏终止）
- * @param :restart_flag：int类型标志（0=不重开，1=玩家请求重开）
- * @param :quit_flag：int类型标志（0=不退出，1=玩家请求退出游戏返回主界面）
- * @return :无
- */
-
-void Game_Loop(int& game_over_flag, int& restart_flag, int& quit_flag);
 
 /**
  * @biref :结束游戏
@@ -98,4 +88,6 @@ void DrawGameOver(void);
 // quit_flag：int类型标志（0=不退出，1=玩家请求退出游戏返回主界面）
 
 void UpdateSidebarData(int dataY, int newData);
+
+int isPointInCircle(int px, int py, int cx, int cy, int radius);//判断鼠标点击区域是否在圆内
 #endif

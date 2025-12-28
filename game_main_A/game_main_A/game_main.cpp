@@ -11,9 +11,10 @@
 #include <ctime>    // 包含 time()
 #include "game_core.h"
 #include "game_rule.h"
+#include "game_defense.h"
 using namespace std;
 
-
+void Game_Loop(int& game_over_flag, int& restart_flag, int& quit_flag);
 int random_num;
 ExMessage msg;
 int is_Start = 0; // 是否点击开始游戏按钮的标志
@@ -137,4 +138,55 @@ GAME_EXIT: // 退出标记
     Game_Quit(); // 保留你的原有退出逻辑
     closegraph(); // 补充关闭图形窗口，避免资源泄漏
     return 0;
+}
+
+void Game_Loop(int& game_over_flag, int& restart_flag, int& quit_flag)
+{
+    Sleep(16); // 帧率控制
+
+    ExMessage game_msg;
+    while (peekmessage(&game_msg, EX_MOUSE | EX_KEY)) {
+
+        if (game_msg.message == WM_LBUTTONDOWN)
+            cout << game_msg.x << " " << game_msg.y << endl;
+        if (game_msg.message == WM_KEYDOWN) {
+            switch (game_msg.vkcode) {
+            case VK_ESCAPE: // ESC退出
+                quit_flag = 1;
+                game_over_flag = 1;
+                break;
+            case 'R': // R重开
+                restart_flag = 1;
+                game_over_flag = 1;
+                break;
+            }
+        }
+
+        // 按钮检测
+        if (game_msg.message == WM_LBUTTONDOWN) {
+            // 先判断退出按钮（700,50 ~ 780,100）
+            if (game_msg.x >= 860 && game_msg.x <= 940 && game_msg.y >= 140 && game_msg.y <= 190) {
+                quit_flag = 1;
+                game_over_flag = 1;
+            }
+            // 再判断重开按钮（700,120 ~ 780,170）
+            else if (game_msg.x >= 860 && game_msg.x <= 940 && game_msg.y >= 200 && game_msg.y <= 250) {
+                restart_flag = 1;
+                game_over_flag = 1;
+            }
+        }
+
+        if (game_msg.message == WM_LBUTTONDOWN && isPointInCircle(game_msg.x, game_msg.y, Game_width / 8, (2 * Game_height) / 3 + height / 3, Gap))
+        {
+            draw_blocks(game_msg.x, game_msg.y);
+        }
+        
+    }
+
+    UpdateSidebarData(20, 100);
+    // 游戏逻辑（可扩展）
+    // ********** 你的游戏主逻辑写在这里 **********
+    // 比如：玩家操作、碰撞检测、敌人AI等
+    // 当满足游戏结束条件时，调用TriggerGameOver()
+    // 示例：if (玩家生命值 <= 0) { TriggerGameOver(); }
 }
