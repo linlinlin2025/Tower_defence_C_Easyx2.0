@@ -512,7 +512,3 @@ void removeCannon(int* totalmoney) {
 //        }
 //    }
 //}
-    int main()
-    {
-        return 0;
-    }
