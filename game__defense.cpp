@@ -6,9 +6,9 @@
 
 // 三种防御塔的具体数据
 const DefenseUnit tower[] = {
-    {tower1,10,calcTowerGridRange(7,7),100},
-    {tower2,20,calcTowerGridRange(5,5),200},
-    {tower3,30,calcTowerGridRange(3,3),300}
+    {tower1,10,{},100,TOWER1_ATTACK_RADIUS},
+    {tower2,20,{},200,TOWER2_ATTACK_RADIUS},
+    {tower3,30,{},300,TOWER3_ATTACK_RADIUS}
 };
 
 // 大炮升级配置（等级越高攻击力增量越小，共3级）
@@ -23,12 +23,7 @@ int block_count = 0;     // 实际方块数量
 Cannon cannons[MAX_CANNON];	// 大炮数组
 int cannon_count = 0;			// 当前大炮数量
 int selected_idx = -1;			// 选中的大炮索引
-int selected_tower_type = invalidType; // 默认选中的部署类型（tower1）
-
-//定义全局鼠标坐标（实时更新）
-int g_mouse_x = 0; // 全局鼠标X坐标
-int g_mouse_y = 0; // 全局鼠标Y坐标
-
+int selected_tower_type = 0;		// 选中的防御塔类型(0=未选择大炮，1=tower1，2=tower2，3=tower3)
 
 // 错误提示文字绘制
 void drawTip(const TCHAR* text) {
@@ -38,14 +33,14 @@ void drawTip(const TCHAR* text) {
 }
 
 // 计算单个方格的射程范围（基于塔的摆放格子坐标和Gap）
-GridRange calcTowerGridRange(int grid_x, int grid_y) {
+GridRange calcTowerGridRange(int grid_x, int grid_y,int radius) {
     GridRange attack_range;
-    // 左上坐标：格子坐标 * 像素间隔
-    attack_range.top_left.cannon_x= grid_x * Gap;
-    attack_range.top_left.cannon_y = grid_y * Gap;
-    // 右下坐标：(格子坐标+1) * 像素间隔（覆盖整个方格）
-    attack_range.bottom_right.cannon_x = (grid_x + 1) * Gap;
-    attack_range.bottom_right.cannon_y = (grid_y + 1) * Gap;
+    // 左上坐标
+    attack_range.top_left.cannon_x= (grid_x-radius) * Gap;
+    attack_range.top_left.cannon_y =(grid_y-radius) * Gap;
+    // 右下坐标
+    attack_range.bottom_right.cannon_x = (grid_x + radius+1) * Gap;
+    attack_range.bottom_right.cannon_y = (grid_y + +radius+1) * Gap;
     return attack_range;
 }
 
@@ -81,27 +76,30 @@ DefenseUnit GetDefense(int* totalmoney)
     invalidUnit.attack_range = {};
     invalidUnit.price = 0;
 	if (totalmoney == NULL) return invalidUnit;
-	MOUSEMSG m = GetMouseMsg();
-	if (m.uMsg != WM_LBUTTONDOWN) return invalidUnit;//仅处理鼠标左键点击事件
-	DefenseType type = CheckClickedTower(m.x, m.y);
-    if (*totalmoney < tower[type].price) return invalidUnit;
-    else
-    {
-        return tower[type];
-    }
+	//MOUSEMSG m = GetMouseMsg();
+	//if (m.uMsg != WM_LBUTTONDOWN) return invalidUnit;//仅处理鼠标左键点击事件
+	//DefenseType type = CheckClickedTower(m.x, m.y);
+	if (selected_tower_type == 0)return invalidUnit;//未选择防御塔类型
+    if (*totalmoney < tower[selected_tower_type].price) return invalidUnit;
+	return tower[selected_tower_type];
 }
 
 
 // 根据地图编号得到棕色方块坐标
 void generate_blocks(int random_num) {
+    block_count = 0; // 重置方块数量
+    Point* pos = NULL;
+    int pos_count = 0;
     if (random_num == 1) {
-        Point Friendly_BasePosMap1[] = {
+        static Point Friendly_BasePosMap1[] = {
             {5,3},{5,4} ,{5,5},{5,6},{5,7},{5,8},{5,9},{5,10},{5,11},
             {6,3},{6,4} ,{6,5},{6,6},{6,7},{6,8},{6,9},{6,10},{6,11},
             {7,3},{7,4} ,{7,5},{7,6},{7,7},{7,8},{7,9},{7,10},{7,11},
             {13,3},{13,4} ,{13,5},{13,6},{13,7},{13,8},{13,9},{13,10},{13,11},
             {14,3},{14,4} ,{14,5},{14,6},{14,7},{14,8},{14,9},{14,10},{14,11},
             {15,3},{15,4} ,{15,5},{15,6},{15,7},{15,8},{15,9},{15,10},{15,11} };
+        pos = Friendly_BasePosMap1;
+        pos_count = sizeof(Friendly_BasePosMap1) / sizeof(Point);
     }
     if (random_num == 2) {
         Point Friendly_BasePosMap2[] = {
@@ -117,6 +115,8 @@ void generate_blocks(int random_num) {
             {3,13},{4,13},{5,13},{6,13},{14,13},{15,13},{16,13},{17,13},//底部突出部分左侧和右侧
             {3,14},{4,14},{5,14},{6,14},{7,14},{8,14},{9,14},{10,14},{11,14},{12,14},{13,14},{14,14},{15,14},{16,14},{17,14},{18,14},{19,14},{20,14}// 底部防御区域
         };
+        pos = Friendly_BasePosMap2;
+        pos_count = sizeof(Friendly_BasePosMap2) / sizeof(Point);
     }
     if (random_num == 3) {
         Point Friendly_BasePosMap3[] = {
@@ -137,63 +137,68 @@ void generate_blocks(int random_num) {
             {14,10},{15,10},{16,10},
             {13,9},{14,9},{15,9} //右下侧Z型区域
         };
+        pos = Friendly_BasePosMap3;
+        pos_count = sizeof(Friendly_BasePosMap3) / sizeof(Point);
+    }
+    for (int i = 0; i < pos_count && block_count < 1000; i++) {
+        blocks[block_count].x1 = pos[i].cannon_x * Gap;
+        blocks[block_count].y1 = pos[i].cannon_y * Gap;
+        blocks[block_count].x2 = blocks[block_count].x1 + Gap;
+        blocks[block_count].y2 = blocks[block_count].y1 + Gap;
+        blocks[block_count].is_hover = false;
+        block_count++;
     }
 }
 
 // 检测鼠标悬停并绘制方块
-void draw_blocks() {
-    static MOUSEMSG m; // 静态存储鼠标消息，避免重复获取
-    // 若有鼠标消息，更新鼠标坐标
-    if (MouseHit()) {
-        m = GetMouseMsg();
-    }
-    // 遍历所有方块，检测鼠标是否悬停
-    for (int i = 0; i < block_count; i++) {
-        if (m.x >= blocks[i].x1 && m.x <= blocks[i].x2 &&
-            m.y >= blocks[i].y1 && m.y <= blocks[i].y2) {
-            blocks[i].is_hover = true;
+void draw_blocks(int mouse_x,int mouse_y) {
+    if (selected_tower_type != 0)//只有选中大炮类型时才检测悬停
+    {
+        int grid_mouse_x = mouse_x / Gap * Gap;
+        int grid_mouse_y = mouse_y / Gap * Gap;
+        // 绘制方块（根据悬停状态切换颜色）
+        for (int i = 0; i < block_count; i++) {
+            if (grid_mouse_x >= blocks[i].x1 && grid_mouse_y < blocks[i].x2 && grid_mouse_y >= blocks[i].y1 && grid_mouse_y < blocks[i].y2) {
+                blocks[i].is_hover = true;
+            }
+            else {
+				blocks[i].is_hover = false;
+            }
+            if (blocks[i].is_hover) {
+                setfillcolor(GREEN); // 绿色悬停颜色
+            }
+            else {
+				setfillcolor(RGB(185, 128, 71)); //移开后恢复棕色 
+			}
+			fillrectangle(blocks[i].x1, blocks[i].y1, blocks[i].x2, blocks[i].y2);
         }
-        else {
-            blocks[i].is_hover = false;
-        }
-    }
-    // 绘制方块（根据悬停状态切换颜色）
-    for (int i = 0; i < block_count; i++) {
-        if (blocks[i].is_hover) {
-            setfillcolor(GREEN);
-        }
-        else {
-            setfillcolor(RGB(185, 128, 71));
-        }
-        fillrectangle(blocks[i].x1, blocks[i].y1, blocks[i].x2, blocks[i].y2);
     }
 }
 
-// 判断鼠标点击位置是否可部署大炮（返回true=可部署，false=不可部署）
-bool canDeployCannon(int mouse_x, int mouse_y) {
+// 判断鼠标点击位置是否可部署大炮（返回1=可部署，0=不可部署）
+int canDeployCannon(int mouse_x, int mouse_y) {
     // 1. 检测鼠标点击是否在棕色格子内
     int target_block_idx = -1;
-    for (int i = 0; i < block_count; i++) {
+    for (int i = 0; i < block_count; i++) 
         if (mouse_x >= blocks[i].x1 && mouse_x <= blocks[i].x2 &&
             mouse_y >= blocks[i].y1 && mouse_y <= blocks[i].y2) {
             target_block_idx = i;
             break;
         }
-    }
     // 不是棕色格子，直接返回false
-    if (target_block_idx == -1) {
-        return false;
+    if(target_block_idx == -1) {
+        return 0;
     }
 
     // 2. 检测该棕色格子是否已部署大炮
-    int block_x = blocks[target_block_idx].x1;
-    int block_y = blocks[target_block_idx].y1;
+    int block_x = blocks[target_block_idx].x1+Gap/2;
+    int block_y = blocks[target_block_idx].y1+Gap/2;
     for (int i = 0; i < cannon_count; i++) {
-        if (cannons[i].x == block_x + Gap / 2 && cannons[i].y == block_y + Gap / 2) {
-            return false; // 已有大炮，不可部署
+        if (cannons[i].x == block_x && cannons[i].y == block_y) {
+            return 0; // 已有大炮，不可部署
         }
     }
-    return true; // 可部署
+    return 1; // 可部署
 }
 
 // 绘制所有大炮
@@ -231,22 +236,17 @@ void drawCannons(Cannon cannon) {
 
 // 部署大炮：先判断（GetDefense）→ 再扣钱 → 最后生成
 void deployCannon(int mouse_x, int mouse_y, int* totalmoney) {
-    if (!canDeployCannon(mouse_x, mouse_y) || cannon_count >= MAX_CANNON||selected_tower_type==invalidType) {
+    if (!canDeployCannon(mouse_x, mouse_y) || cannon_count >= MAX_CANNON||selected_tower_type==invalidType||totalmoney==NULL) {
         return;
     }
 
-    // 1. 调用GetDefense判断金币是否足够、获取防御塔数据（不扣钱）
+    // 调用GetDefense判断金币是否足够、获取防御塔数据（不扣钱）
     DefenseUnit unit = tower[selected_tower_type];
     if (*totalmoney<unit.price) {
         drawTip(_T("金币不足，无法部署该大炮！"));
         return;
     }
-
-    // 2. 确认可部署，执行扣钱操作
-    *totalmoney -= unit.price;
-
-    // 3. 找到点击的棕色格子坐标，生成大炮
-	bool findBlock = false;
+    // 找到点击的棕色格子坐标，生成大炮,执行扣钱操作
     for (int i = 0; i < block_count; i++) {
         if (mouse_x >= blocks[i].x1 && mouse_x <= blocks[i].x2 &&
             mouse_y >= blocks[i].y1 && mouse_y <= blocks[i].y2) {
@@ -256,12 +256,12 @@ void deployCannon(int mouse_x, int mouse_y, int* totalmoney) {
             cannons[cannon_count].level = 1;
             cannons[cannon_count].current_attack = unit.attack;
 			int grid_x = blocks[i].x1 / Gap;
-			int grid_y = blocks[i].y1 / Gap;
-			cannons[cannon_count].attack_range = calcTowerGridRange(grid_x, grid_y);
-            cannons[cannon_count].is_selected = false;
+            int grid_y = blocks[i].y1 / Gap;
+			cannons[cannon_count].attack_range = calcTowerGridRange(grid_x, grid_y,unit.attack_radius);
+            *totalmoney -= unit.price;
+			cannons[cannon_count].is_selected = false;// 默认未选中
 			drawCannons(cannons[cannon_count]);// 立即绘制新部署的大炮
             cannon_count++;
-            findBlock = true;
             break;
         }
     }
@@ -272,9 +272,9 @@ void selectCannon(int mouse_x, int mouse_y) {
     // 取消之前选中的大炮
     if (selected_idx != -1) {
         cannons[selected_idx].is_selected = false;
+		drawCannons(cannons[selected_idx]);
         selected_idx = -1;
     }
-
     // 检测点击的大炮
     for (int i = 0; i < cannon_count; i++) {
         int dx = mouse_x - cannons[i].x;
@@ -282,6 +282,7 @@ void selectCannon(int mouse_x, int mouse_y) {
         if (dx * dx + dy * dy <= (Gap / 2) * (Gap / 2)) { // 大炮半径为Gap/2
             cannons[i].is_selected = true;
             selected_idx = i;
+			drawCannons(cannons[i]);
             break;
         }
     }
@@ -316,7 +317,7 @@ void removeCannon(int* totalmoney) {
     DefenseUnit unit = tower[c->type];
 
     // 返还金币
-    totalmoney += (int)(unit.price * Refund_Rate);
+    *totalmoney += (int)(unit.price * Refund_Rate);
 	// 从数组中移除该大炮
     for(int i=selected_idx; i < cannon_count - 1; i++) {
         cannons[i] = cannons[i + 1]; 
@@ -327,63 +328,6 @@ void removeCannon(int* totalmoney) {
     selected_idx = -1;
 }
 
-// 实时监测鼠标位置及点击事件
-void RealTimeMouseMonitor(int* totalmoney) {
-    if (totalmoney == NULL) return;
-
-    MOUSEMSG m;
-    if (MouseHit()) {
-        m = GetMouseMsg();
-        g_mouse_x = m.x;
-        g_mouse_y = m.y;
-
-        if (m.uMsg == WM_LBUTTONDOWN) {
-            // 1. 检测是否点击防御塔选择按钮（优先级最高）
-            DefenseType clicked_tower = CheckClickedTower(g_mouse_x, g_mouse_y);
-            if (clicked_tower != invalidType) {
-                selected_tower_type = clicked_tower;
-                return;
-            }
-
-            // 2. 检测是否点击升级按钮
-            int upgrade_x1 = 13 * Game_width / 16;
-            int upgrade_y1 = height / 7 + 6 * Game_height / 7;
-            int upgrade_x2 = 15 * Game_width / 16;
-            int upgrade_y2 = 3 * height / 7 + 4 * Game_height / 7;
-            if (g_mouse_x >= upgrade_x1 && g_mouse_x <= upgrade_x2 &&
-                g_mouse_y >= upgrade_y1 && g_mouse_y <= upgrade_y2) {
-                upgradeCannon(totalmoney); // 内部已做选中/等级/金币校验
-                return;
-            }
-
-            // 3. 检测是否点击移除按钮
-            int remove_x1 = 13 * Game_width / 16;
-            int remove_y1 = 5 * height / 7 + 2 * Game_height / 8;
-            int remove_x2 = 15 * Game_width / 16;
-            int remove_y2 = 6 * height / 7 + Game_height / 7;
-            if (g_mouse_x >= remove_x1 && g_mouse_x <= remove_x2 &&
-                g_mouse_y >= remove_y1 && g_mouse_y <= remove_y2) {
-                removeCannon(totalmoney); // 内部删除数组中大炮数据
-                return;
-            }
-
-            // 4. 检测是否点击已部署的大炮（选中操作）
-            selectCannon(g_mouse_x, g_mouse_y);
-
-            // 5. 检测是否部署大炮（已选塔 + 可部署位置）
-            if (selected_tower_type != invalidType) {
-                if (canDeployCannon(g_mouse_x, g_mouse_y)) {
-                    deployCannon(g_mouse_x, g_mouse_y, totalmoney);
-                    selected_tower_type = invalidType; // 部署后重置选塔类型
-                }
-                else {
-                    drawTip(_T("该位置无法部署大炮！"));
-                }
-                return;
-            }
-        }
-    }
-}
     //打印地图下方的防御区域
     void PrintDefenseAreas()
     {
@@ -419,3 +363,61 @@ void RealTimeMouseMonitor(int* totalmoney) {
        /* _getch();
         closegraph();*/
     }
+
+    //// 实时监测鼠标位置及点击事件
+//void RealTimeMouseMonitor(int* totalmoney) {
+//    if (totalmoney == NULL) return;
+//
+//    MOUSEMSG m;
+//    if (MouseHit()) {
+//        m = GetMouseMsg();
+//        g_mouse_x = m.x;
+//        g_mouse_y = m.y;
+//
+//        if (m.uMsg == WM_LBUTTONDOWN) {
+//            // 1. 检测是否点击防御塔选择按钮（优先级最高）
+//            DefenseType clicked_tower = CheckClickedTower(g_mouse_x, g_mouse_y);
+//            if (clicked_tower != invalidType) {
+//                selected_tower_type = clicked_tower;
+//                return;
+//            }
+//
+//            // 2. 检测是否点击升级按钮
+//            int upgrade_x1 = 13 * Game_width / 16;
+//            int upgrade_y1 = height / 7 + 6 * Game_height / 7;
+//            int upgrade_x2 = 15 * Game_width / 16;
+//            int upgrade_y2 = 3 * height / 7 + 4 * Game_height / 7;
+//            if (g_mouse_x >= upgrade_x1 && g_mouse_x <= upgrade_x2 &&
+//                g_mouse_y >= upgrade_y1 && g_mouse_y <= upgrade_y2) {
+//                upgradeCannon(totalmoney); // 内部已做选中/等级/金币校验
+//                return;
+//            }
+//
+//            // 3. 检测是否点击移除按钮
+//            int remove_x1 = 13 * Game_width / 16;
+//            int remove_y1 = 5 * height / 7 + 2 * Game_height / 8;
+//            int remove_x2 = 15 * Game_width / 16;
+//            int remove_y2 = 6 * height / 7 + Game_height / 7;
+//            if (g_mouse_x >= remove_x1 && g_mouse_x <= remove_x2 &&
+//                g_mouse_y >= remove_y1 && g_mouse_y <= remove_y2) {
+//                removeCannon(totalmoney); // 内部删除数组中大炮数据
+//                return;
+//            }
+//
+//            // 4. 检测是否点击已部署的大炮（选中操作）
+//            selectCannon(g_mouse_x, g_mouse_y);
+//
+//            // 5. 检测是否部署大炮（已选塔 + 可部署位置）
+//            if (selected_tower_type != invalidType) {
+//                if (canDeployCannon(g_mouse_x, g_mouse_y)) {
+//                    deployCannon(g_mouse_x, g_mouse_y, totalmoney);
+//                    selected_tower_type = invalidType; // 部署后重置选塔类型
+//                }
+//                else {
+//                    drawTip(_T("该位置无法部署大炮！"));
+//                }
+//                return;
+//            }
+//        }
+//    }
+//}
