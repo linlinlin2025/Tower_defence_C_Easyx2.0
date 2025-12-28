@@ -127,20 +127,16 @@ int Game_Score = 0;// 游戏积分，初始值为0
 // 新增：全局变量记录最高积分（初始0）
 int Highest_Game_Score = 0;
 
-// 1. 积分计算与累加核心函数（修正原函数语法错误，使用外部结构体）
+// 1. 积分计算与累加核心函数
 
-void CalculateAndAddScoreByEnemy(const struct Dead_enemy_count* pDeadEnemyCount) {
+void CalculateAndAddScoreByEnemy(Deadenemy_stat* pDeadEnemyCount) {
      
-    if (pDeadEnemyCount == NULL) {
-        printf("错误：传入的敌人死亡计数结构体指针为空！\n");
-        return;
-    }
 
     // 按规则计算各类敌人死亡对应的积分（一级+10、二级+25、三级+40）
     int addScore = 0;
-    addScore += pDeadEnemyCount->enemy_grade_1 * 10;   // 一级敌人积分
-    addScore += pDeadEnemyCount->enemy_grade_2 * 25;   // 二级敌人积分
-    addScore += pDeadEnemyCount->enemy_grade_3 * 40;   // 三级敌人积分
+    addScore += pDeadEnemyCount->grade_1_count * 10;   // 一级敌人积分
+    addScore += pDeadEnemyCount->grade_2_count * 25;   // 二级敌人积分
+    addScore += pDeadEnemyCount->grade_3_count * 40;   // 三级敌人积分
 
     // 累加至全局游戏积分Game_Score
     Game_Score += addScore;
@@ -264,4 +260,5 @@ int main() {
 
 
 	
+
 
