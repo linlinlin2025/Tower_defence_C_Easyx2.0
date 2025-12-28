@@ -1,7 +1,7 @@
 
 #include "game_rule.h"
 #include"game_core.h"
-#include"game_enemy .h"
+#include"game_enemy.h"
 #include<easyx.h>  // 必须包含EasyX头文件
 #include<conio.h>  // 包含_getch()的头文件
 using namespace std;
@@ -260,5 +260,6 @@ int main() {
 
 
 	
+
 
 
